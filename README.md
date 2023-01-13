@@ -15,46 +15,74 @@ This is a walkthrough of a Splunk Project
 <h2>Program walk-through:</h2>
 
 <h3>Description</h3>
-A Big corporate organization Wayne Enterprises has recently faced a cyber-attack where the attackers broke into their network, found their way to their web server, and have successfully defaced their website http://www.imreallynotbatman.com. Their website is now showing the trademark of the attackers with the message "YOUR SITE HAS BEEN DEFACED":
+A Big corporate organization Wayne Enterprises has recently faced a cyber-attack where the attackers broke into their network, found their way to their web server, and have successfully defaced their website http://www.imreallynotbatman.com. <br/>
+<br> Their website is now showing the trademark of the attackers with the message "YOUR SITE HAS BEEN DEFACED":
 <br />
 
 <p align="center">
-<img src="https://github.com/gitahn11/Splunk-Project/blob/main/Uploads/1.png" height="50%" width="50%" alt="Disk Sanitization Steps"/>
+ <br/> Defaced Website <br/>
+<img src="https://github.com/gitahn11/Splunk-Project/blob/main/Uploads/1.png" height="70%" width="70%" alt="Disk Sanitization Steps"/>
   </p>
-
-<h3> Incident Response Process </h3>
-<p align="center">
-<img src="https://github.com/gitahn11/Splunk-Project/blob/main/Uploads/Picture2.png" height="50%" width="50%" alt="Disk Sanitization Steps"/>
+  
+  <h3>Splunk Logs:</h3>
+Wayne Enterprises have Splunk SIEM already in place, so we have got all the event logs related to the attacker's activities captured. We need to explore the records and find how the attack got into their network and what actions they performed.<br/>
+<br> Logs are being ingested from webserver/firewall/Suricata/Sysmon etc. In the data summary tab, we can explore the log sources showing visibility into both network-centric and host-centric activities. 
+<p align="center"> <br/>
+ Splunk Sources <br/>
+<img src="https://github.com/gitahn11/Splunk-Project/blob/main/Uploads/Picture4.png" height="50%" width="50%" alt="Disk Sanitization Steps"/><img src="https://github.com/gitahn11/Splunk-Project/blob/main/Uploads/Picture5.png" height="50%" width="50%" alt="Disk Sanitization Steps"/>
   </p>
-<ol> 
-  <li> Preparation: A strong plan must be in place to support your team. To successfully address security events, these features should be included in an incident response plan: </li>
-  <ul>
-    <li> Develop and Document IR Policies: Establish policies, procedures, and agreements for incident response management. </li>
-    <li> Incorporate Threat Intelligence Feeds: Perform ongoing collection, analysis, and synchronization of your threat intelligence feeds. </li>
-    <li> Assess Your Threat Detection Capability: Assess your current threat detection capability and update risk assessment and improvement programs. </li>
-  </ul> 
+  
+ <h3>Splunk Analysis: Recon </h3>
+We will start our analysis by examining any reconnaissance attempt against the webserver imreallynotbatman.com Let's start by searching for the domain in the search head and see which log source includes the traces of our domain. <br/>
+<p align="center"> <br/>
+ Splunk Query <br/>
+<img src="https://github.com/gitahn11/Splunk-Project/blob/main/Uploads/Picture6.png" height="50%" width="50%" alt="Disk Sanitization Steps"/>
+  </p> 
+  
+In the sourcetype field, we saw that the following log sources contain the traces of this search term.
+<ul>
+ <li> Suricata </li>
+ <li> Stream:http </li>
+ <li> Fortigate_utm </li>
+ <li> iis </li>
+</ul>
  
-  <b> <li> Detection & Analysis: The focus of this phase is to monitor security events in order to detect, alert, and report on potential security incidents. Resources should be utilized to collect data from tools and systems for further analysis and to identify indicators of compromise </li>
-  <ul>
-    <li> Monitor, Detect. and Alert: Monitor security events in your environment using firewalls, intrusion prevention systems, and data loss prevention. Detect potential security incidents by correlating alerts within a SIEM solution. Analysts create an incident ticket, document initial findings, and assign an initial incident classification. </li>
-    <li> Endpoint Analysis: Determine what tracks may have been left behind by the threat actor. Gather the artifacts needed to build a timeline of activities. </li>
-    <li> Binary Analysis: Investigate malicious binaries or tools leveraged by the attacker and document the functionalities of those programs. </li>
-    <li> Enterprise Hunting: Analyze existing systems and event log technologies to determine the scope of compromise. </li>
-  </ul>
-      </b>
-  
-  <b> <li> Containment and Neutralization: This is one of the most critical stages of incident response. The strategy for containment and neutralization is based on the intelligence and indicators of compromise gathered during the analysis phase. After the system is restored and security is verified, normal operations can resume.
-•	Coordinated Shutdown: Once you have identified all systems within the environment that have been compromised by a threat actor, perform a coordinated shutdown of these devices. </li>
-  <ul>
-    <li> Wipe and Rebuild: Wipe the infected devices and rebuild the operating system from the ground up. Change passwords of all compromised accounts. </li>
-    <li> Coordinated Shutdown: Once you have identified all systems within the environment that have been compromised by a threat actor, perform a coordinated shutdown of these devices.  </li>
-  </ul>
-  </b>
-  
-  <b> <li> Post-Incident Activity: There is more work to be done after the incident is resolved. Be sure to properly document any information that can be used to prevent similar occurrences from happening again in the future. </li>
-  </b>
-</ol> 
+ <p align="center">
+ Splunk Log Sorces <br/>
+<img src="https://github.com/gitahn11/Splunk-Project/blob/main/Uploads/Picture7.png" height="70%" width="70%" alt="Disk Sanitization Steps"/>
+  </p> 
+ 
+Our first task is to identify the IP address attempting to perform reconnaissance activity on our web server. <br/>
+Let us begin looking at the log source stream:http, which contains the http traffic logs, and examine the src_ip field from the left panel. Src_ip field contains the source IP address it finds in the logs. <br/> We have found two IPs in the src_ip field 40.80.148.42 and 23.22.63.114. The first IP seems to contain a high percentage of the logs as compared to the other IP, which could be the answer. <br/> 
 
+ <p align="center">
+ Splunk Query <br/>
+<img src="https://github.com/gitahn11/Splunk-Project/blob/main/Uploads/Picture8.png" height="70%" width="70%" alt="Disk Sanitization Steps"/>
+  </p>
+
+ <p align="center">
+ IP Addresses found <br/>
+<img src="https://github.com/gitahn11/Splunk-Project/blob/main/Uploads/Picture9.png" height="70%" width="70%" alt="Disk Sanitization Steps"/>
+  </p>
+
+ <p align="center">
+ Activity associated with IP 40.80.148.42 <br/>
+<img src="https://github.com/gitahn11/Splunk-Project/blob/main/Uploads/Picture10.png" height="70%" width="70%" alt="Disk Sanitization Steps"/>
+  </p>
+  
+It appears that the IP was performing some scanning on the web server and we can further verify this activity by reviewing logs from Suricata that are being ingested in Splunk. Suricata is a Intrusion Detection System that will pick up any network activity that appears suspicious or malicious. 
+
+<p align="center">
+ Splunk Query <br/>
+<img src="https://github.com/gitahn11/Splunk-Project/blob/main/Uploads/Picture11.png" height="70%" width="70%" alt="Disk Sanitization Steps"/>
+  </p>
+
+ <p align="center">
+ Suricata Logs <br/>
+<img src="https://github.com/gitahn11/Splunk-Project/blob/main/Uploads/Picture12.png" height="70%" width="70%" alt="Disk Sanitization Steps"/>
+  </p>
+  
+  
 
 <h3> Cyber Kill Chain </h3>
 <p align="center">
