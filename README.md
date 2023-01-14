@@ -82,7 +82,7 @@ It appears that the IP was performing some scanning on the web server and we can
 <img src="https://github.com/gitahn11/Splunk-Project/blob/main/Uploads/Picture12.png" height="70%" width="70%" alt="Disk Sanitization Steps"/>
   </p>
   
- <h3>Splunk Analysis: Explolitation </h3>
+ <h3>Splunk Analysis: Exploitation </h3>
 The attacker needs to exploit the vulnerability to gain access to the system/server. We will look at the potential exploitation attempt from the attacker against our web server and see if the attacker got successful in exploiting or not. we will narrow down the result to show requests sent to our web server, which has the IP 192.168.250.70 <br/>
 <p align="center"> <br/>
  Splunk Query <br/>
