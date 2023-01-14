@@ -1,8 +1,6 @@
 # Splunk-Project
 This is a walkthrough of a Splunk Project
 
- ### [YouTube Demonstration](https://youtu.be/7eJexJVCqJo)
-
 <h2>Languages and Utilities Used</h2>
 
 - <b>Splunk</b> 
@@ -10,7 +8,7 @@ This is a walkthrough of a Splunk Project
 
 <h2>Environments Used </h2>
 
-- <b>Linux</b> (21H2)
+- <b>Linux Virtual Machine</b> 
 
 <h2>Program walk-through:</h2>
 
